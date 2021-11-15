@@ -12,12 +12,14 @@ provider "proxmox" {
   pm_api_token_id     = var.proxmox_id
   pm_api_token_secret = var.proxmox_secret
   pm_tls_insecure     = true
+  # Give enough time for Ignition to install qemu-guest-agent
+  pm_timeout = 400
 }
 
 resource "proxmox_vm_qemu" "kube_server" {
   count       = 1
   name        = "kube-vm-${count.index + 1}"
-  desc        = "Rocky Linux VM Kubernetes Node"
+  desc        = "Fedora CoreOS VM Kubernetes Node"
   pool        = "Kubernetes"
   target_node = var.proxmox_host
   clone       = var.template_name
@@ -25,8 +27,10 @@ resource "proxmox_vm_qemu" "kube_server" {
   onboot = true
   tablet = false
   
+  # This parameter will not work without some edits to Proxmox code.
+  # See more in proxmox-args-workaround.md
+  args      = "-fw_cfg name=opt/com.coreos/config,file=/opt/example.ign"
   agent     = 1
-  os_type   = "cloud-init"
   cores     = 2
   sockets   = 1
   cpu       = "host"
@@ -55,8 +59,4 @@ resource "proxmox_vm_qemu" "kube_server" {
   }
 
   ipconfig0 = "ip=10.50.0.21${count.index + 1}/24,gw=10.50.0.1"
-
-  sshkeys = <<EOF
-  ${var.ssh_key}
-  EOF
 }
