@@ -1,0 +1,64 @@
+{
+  "ignition": {
+    "version": "3.3.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "${pubkey}"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/sysctl.d/20-silence-audit.conf",
+        "contents": {
+          "source": "data:,kernel.printk%3D4"
+        },
+        "mode": 420
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/motd",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/6yOUcrCMBCE33OKvv39QSaX8Ag+BkbBioJSKYIIc3iZTSr0VZtCtvtld2ZIAnF9f7ycBJQM6AcdeTtpbkBamoh0NWh1W6CWvbHoBdFCKtmaGdxDwh9R3FAKr0CMd2f3r31jrEIZpsgV4z2jxFcYA5pRi5yDg/h4GNZExQ5iRiE3VKy6cIEAN433/G9jFfpWwkonYTvcr+NrOHbPy+Pc7YZpOpzG6baewzsAAP//r9iskGECAAA="
+        }
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,${hostname}"
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Setup Qemu Guest Agent\nAfter=network-online.target\nWants=network-online.target\nBefore=zincati.service\nConditionPathExists=!/var/lib/qemu-ga.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/bin/rpm-ostree install qemu-guest-agent\nExecStart=/bin/touch /var/lib/qemu-ga.stamp\nExecStart=/bin/systemctl --no-block reboot\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "setup-qemu-guest-agent.service"
+      },
+      {
+        "enabled": true,
+        "name": "fstrim.timer"
+      },
+      {
+        "dropins": [
+          {
+            "contents": "[Service]\nExecStart=\nExecStart=/sbin/fstrim -av\n",
+            "name": "override.conf"
+          }
+        ],
+        "name": "fstrim.service"
+      }
+    ]
+  }
+}

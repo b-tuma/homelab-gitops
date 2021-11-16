@@ -1,6 +1,6 @@
 # Local .terraform directories
 **/.terraform/*
-
+/ignition
 # .tfstate files
 *.tfstate
 *.tfstate.*
