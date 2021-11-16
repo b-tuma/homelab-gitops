@@ -23,6 +23,8 @@ data "template_file" "user_data" {
   vars = {
     pubkey = var.ssh_key
     hostname = "Node${count.index + 1}"
+    CNI_VERSION = "v0.8.2"
+    CRICTL_VERSION = "v1.17.0"
   }
 }
 

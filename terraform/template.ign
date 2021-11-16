@@ -53,6 +53,28 @@
           "source": "data:,%5BService%5D%0AExecStart%3D%0AExecStart%3D%2Fusr%2Fbin%2Fdockerd%0A"
         },
         "mode": 420
+      },
+      {
+        "path": "/etc/sysctl.d/K8s.conf",
+        "contents": {
+          "source": "data:,net.bridge.bridge-nf-call-ip6tables%20%3D%201%0Anet.bridge.bridge-nf-call-iptables%20%3D%201%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/usr/local/bin/kubeinstall.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/7yTTYsaTRDH7/Mp+vHxkJB0VwIhBGEPy+pBEAUNyXHp6a6Mjf0ydNesZo3fPcybq7Ns9pRcLKH+1fX/VdX8/x/kxkMu0zZLoYoKGVQpgg1K2ia1q3J8kDGJWlHpwNxOm8h4ySCUBMqbWpapKlrGF2y0JSrTBKAwtK1yoYIDFTxJ4zF6pH2IO+MLKG1VGJ8gokWZMIEOe2+D1DA+3i3n999m6818tTzVDXgn5tb46sCl058/8WuZoOJxxH6xxiHJyPjdlT/GD49ZNl19Xy5Wt9P76Xx9c805YBtfSrM/0tUDqskw8WSKBCoaTiHYF9jW87uviwu8aBRZ/ixxySpIRvGc78pjC7ieLWa3m9nNaPymtZw2C9Z71lbsviRhQm8MEsncoqADvR1lSg+om149OecRXSDkXjrk0trzs4lClAWKIoTCoixNGo6lb9fH8bHzeWourCGFhhSOdZnU7n0dLVITFdlT52brgmbvDuxlXfYEft5WlHvRbqxKGOtzRE8Dl2d3TibCCMrpJlvuCiB0pZW1qPkl0JhD1xmsySH9TIROd7FPiYTxwShsFoeajdKkObrc+Mn4eDnr06R42i4iAyT1yqPDj/H1CqH/6WykdvDxA+/+ChX8j78yCKGHbbJ2Nq1ckWXo6ztnnPuwZ135WVMLOG/F2e8AAAD//5j0HPEQBQAA"
+        },
+        "mode": 484
+      },
+      {
+        "path": "/usr/local/bin/kubevars.sh",
+        "contents": {
+          "source": "data:,CNI_VERSION%3D${CNI_VERSION}%20%26%26%20CRICTL_VERSION%3D${CRICTL_VERSION}"
+        },
+        "mode": 484
       }
     ]
   },
@@ -62,6 +84,11 @@
         "contents": "[Unit]\nDescription=Setup Required Packages\nAfter=network-online.target\nWants=network-online.target\nBefore=zincati.service\nConditionPathExists=!/var/lib/ostree-setup.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/bin/rpm-ostree install qemu-guest-agent conntrack\nExecStart=/bin/touch /var/lib/ostree-setup.stamp\nExecStart=/bin/systemctl --no-block reboot\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "setup-qemu-ga-conntrack.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Setup Kubernetes\nAfter=network-online.target\nWants=network-online.target\nConditionPathExists=!/var/lib/kubernetes-setup.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/bin/bash /usr/local/bin/kubeinstall.sh\nExecStart=/bin/touch /var/lib/kubernetes-setup.stamp\nExecStart=/bin/rm -rf /usr/local/bin/kubeinstall.sh /usr/local/bin/kubevars.sh\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "setup-kubernetes.service"
       },
       {
         "enabled": true,
