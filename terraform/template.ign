@@ -36,15 +36,32 @@
           "source": "data:,${hostname}"
         },
         "mode": 420
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/docker/daemon.json",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/1SO0WqEMBBF3/MVwzw3Yvso+CVFJMRbmxqNTKJoi/9esq7L7tvAOZy5f4qIscHqMKfIFX3yZJJbUdhewjJ34lZIHfeYMHbcvGXfh16fgCvinxgm/eU8+AHvrRwn4tFsOrpfZPm9LEdWRMfNjSmI6fEUCyvEm/2DX/i17exdTpEPcR3aATLBt/YbdqiTLMgvGnWo/wAAAP//9A15Td8AAAA="
+        },
+        "mode": 420
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/systemd/system/docker.service.d/docker.conf",
+        "contents": {
+          "source": "data:,%5BService%5D%0AExecStart%3D%0AExecStart%3D%2Fusr%2Fbin%2Fdockerd%0A"
+        },
+        "mode": 420
       }
     ]
   },
   "systemd": {
     "units": [
       {
-        "contents": "[Unit]\nDescription=Setup Qemu Guest Agent\nAfter=network-online.target\nWants=network-online.target\nBefore=zincati.service\nConditionPathExists=!/var/lib/qemu-ga.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/bin/rpm-ostree install qemu-guest-agent\nExecStart=/bin/touch /var/lib/qemu-ga.stamp\nExecStart=/bin/systemctl --no-block reboot\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Setup Required Packages\nAfter=network-online.target\nWants=network-online.target\nBefore=zincati.service\nConditionPathExists=!/var/lib/ostree-setup.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/bin/rpm-ostree install qemu-guest-agent conntrack\nExecStart=/bin/touch /var/lib/ostree-setup.stamp\nExecStart=/bin/systemctl --no-block reboot\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
-        "name": "setup-qemu-guest-agent.service"
+        "name": "setup-qemu-ga-conntrack.service"
       },
       {
         "enabled": true,
@@ -58,6 +75,10 @@
           }
         ],
         "name": "fstrim.service"
+      },
+      {
+        "enabled": true,
+        "name": "docker.service"
       }
     ]
   }
