@@ -26,6 +26,10 @@ variable "proxmox_user" {
   default = "proxmox"
 }
 
+variable "proxmox_password" {
+  default = "password"
+}
+
 variable "vm_count" {
   default = 1
 }

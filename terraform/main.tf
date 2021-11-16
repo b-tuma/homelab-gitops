@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "2.9.0"
+      version = "2.9.1"
     }
   }
 }
@@ -13,12 +13,13 @@ provider "proxmox" {
   pm_api_token_secret = var.proxmox_secret
   pm_tls_insecure     = true
   # Give enough time for Ignition to install qemu-guest-agent
-  pm_timeout = 600
+  #pm_timeout = 600
 }
 
 data "template_file" "user_data" {
   count = var.vm_count
   template = file("${path.module}/template.ign")
+  # Ignition variables
   vars = {
     pubkey = var.ssh_key
     hostname = "Node${count.index + 1}"
@@ -36,12 +37,13 @@ resource "null_resource" "proxmox_ignition_file" {
   connection {
     type = "ssh"
     user = var.proxmox_user
+    password = var.proxmox_password
     host = var.proxmox_host
   }
 
   provisioner "file" {
     source = local_file.ignition_user_data_file[count.index].filename
-    destination = "/var/lib/vz/snippets/ignition_${count.index + 1}.ign"
+    destination = "/tmp/ignition_${count.index + 1}.ign"
   }
 }
 
@@ -62,7 +64,7 @@ resource "proxmox_vm_qemu" "kube_server" {
   
   # This parameter will not work without some edits to Proxmox code.
   # See more in proxmox-args-workaround.md
-  args      = "-fw_cfg name=opt/com.coreos/config,file=/var/lib/vz/snippets/ignition_${count.index + 1}.ign"
+  args      = "-fw_cfg name=opt/com.coreos/config,file=/tmp/ignition_${count.index + 1}.ign"
   agent     = 1
   cores     = 2
   sockets   = 1
@@ -82,6 +84,11 @@ resource "proxmox_vm_qemu" "kube_server" {
   network {
     model  = "virtio"
     bridge = "vmbr0"
+  }
+
+  timeouts {
+    create = "5m"
+    delete = "1m"
   }
 
   # Fix weirdness with pool name being detected as changed.
