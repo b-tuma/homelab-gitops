@@ -65,14 +65,14 @@
         "path": "/usr/local/bin/kubeinstall.sh",
         "contents": {
           "compression": "gzip",
-          "source": "data:;base64,H4sIAAAAAAAC/7yTTYsaTRDH7/Mp+vHxkJB0VwIhBGEPy+pBEAUNyXHp6a6Mjf0ydNesZo3fPcybq7Ns9pRcLKH+1fX/VdX8/x/kxkMu0zZLoYoKGVQpgg1K2ia1q3J8kDGJWlHpwNxOm8h4ySCUBMqbWpapKlrGF2y0JSrTBKAwtK1yoYIDFTxJ4zF6pH2IO+MLKG1VGJ8gokWZMIEOe2+D1DA+3i3n999m6818tTzVDXgn5tb46sCl058/8WuZoOJxxH6xxiHJyPjdlT/GD49ZNl19Xy5Wt9P76Xx9c805YBtfSrM/0tUDqskw8WSKBCoaTiHYF9jW87uviwu8aBRZ/ixxySpIRvGc78pjC7ieLWa3m9nNaPymtZw2C9Z71lbsviRhQm8MEsncoqADvR1lSg+om149OecRXSDkXjrk0trzs4lClAWKIoTCoixNGo6lb9fH8bHzeWourCGFhhSOdZnU7n0dLVITFdlT52brgmbvDuxlXfYEft5WlHvRbqxKGOtzRE8Dl2d3TibCCMrpJlvuCiB0pZW1qPkl0JhD1xmsySH9TIROd7FPiYTxwShsFoeajdKkObrc+Mn4eDnr06R42i4iAyT1yqPDj/H1CqH/6WykdvDxA+/+ChX8j78yCKGHbbJ2Nq1ckWXo6ztnnPuwZ135WVMLOG/F2e8AAAD//5j0HPEQBQAA"
+          "source": "data:;base64,H4sIAAAAAAAC/7yTz44SQRDG7/MULXLQaHdpYowh8WDAAwmBhDV63PR0l0OH/jPprllwkXc30zOwMJt1T3qhSOrrqu9XVfPyBZTGQynTpkihiQoZNCmCDUranNo2Jd7JmESraHRgbqtNZLxmEGoC5U0rK1QTLeMLNtoQ1WkCUBnaNKVQwYEKnqTxGD3SLsSt8RXUtqmMTxDRokyYQIedt0FqGB+my/nt96/rm/lqeWwb8F7MrfHNnkunP37g1zJB1f2I/WbZIcnI+PTKH+P7+6KYrX4sF6svs9vZfP35mnPANr6UFn+lawfUkmHiyVQJVDScQrBPsK3n02+LC7xoFFn+KHHJKkhG8ZjvymMHqPTAedaf3HMe0QVC7qVDLq1lJ5xEIcoKRRVCZVHWJg3RepYTE4xfdVXTzeJcRVux/ZSECWdVIllaFLSn1/mYMhRkKDi01aV2b9tokXJUZI+96Y0Lmr3Zs6d1xYOF82Ki3IluOU3C2F4eehrAnO05mQgjKKdztt5WQOhqK1tR/iXQWELfGawpIf1KhE738ZQSCeOdUZh3hJqN0iTfV2n8ZHy4XMlxUj0sEpEBknqm6PC7e/6F0P91NlI7eP+O93+FCv7nPxmE0MM2RTebTq7IMvTtxTHOfdix/vlZ0wo478TFnwAAAP//FCUkw/sEAAA="
         },
         "mode": 484
       },
       {
         "path": "/usr/local/bin/kubevars.sh",
         "contents": {
-          "source": "data:,CNI_VERSION%3D${CNI_VERSION}%20%26%26%20CRICTL_VERSION%3D${CRICTL_VERSION}"
+          "source": "data:,CNI_VERSION%3D${cni_version}%20%26%26%20CRICTL_VERSION%3D${crictl_version}"
         },
         "mode": 484
       }
