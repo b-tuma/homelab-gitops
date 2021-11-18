@@ -33,3 +33,23 @@ variable "proxmox_password" {
 variable "vm_count" {
   default = 1
 }
+
+variable "controllers_count" {
+  default = 1
+}
+
+variable "workers_count" {
+  default = 1
+}
+
+variable "snippets" {
+  type        = map(list(string))
+  description = "Map from machine names to lists of Butane snippets"
+  default     = {}
+}
+
+variable "cluster_domain_suffix" {
+  description = "Queries for domains with the suffix will be answered by coredns. Default is cluster.local (e.g. foo.default.svc.cluster.local) "
+  type        = string
+  default     = "cluster.local"
+}
