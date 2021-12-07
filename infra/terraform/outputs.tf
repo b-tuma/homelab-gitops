@@ -1,0 +1,4 @@
+output "kubeconfig-admin" {
+  value     = module.bootstrap.kubeconfig-admin
+  sensitive = true
+}

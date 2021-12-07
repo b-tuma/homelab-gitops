@@ -85,10 +85,10 @@ data "template_file" "controller-configs" {
 
   template = file("${path.module}/fcc/controller.yaml")
   vars = {
-    domain_name = "nodec${count.index + 1}.cluster.mansures.net"
+    domain_name = "nodec${count.index + 1}.${var.domain_name}"
     etcd_name = "nodec${count.index + 1}"
     etcd_initial_cluster = join(",", data.template_file.etcds.*.rendered)
-    cluster_dns_service_ip = ""
+    cluster_dns_service_ip = module.bootstrap.cluster_dns_service_ip
     cluster_domain_suffix = var.cluster_domain_suffix
     ssh_authorized_key = var.ssh_key
     desc = "Kubernetes Controller ${count.index + 1}"
@@ -100,7 +100,7 @@ data "template_file" "etcds" {
   template = "$${etcd}=https://$${domain}:2380"
 
   vars = {
-    etcd        = "nodec${count.index + 1}"
-    domain = "nodec${count.index + 1}.cluster.mansures.net"
+    etcd   = "nodec${count.index + 1}"
+    domain = "nodec${count.index + 1}.${var.domain_name}"
   }
 }
