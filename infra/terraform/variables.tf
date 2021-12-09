@@ -10,7 +10,12 @@ variable "proxmox_host" {
 
 variable "ssh_key" {
   type    = string
-  default = "ssh-rsa AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA me@mypc" 
+  default = "ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA me@mypc" 
+}
+
+variable "ssh_priv" {
+  type = string
+  default = "/home/user/.ssh/id_ed25519"
 }
 
 variable "template_name" {

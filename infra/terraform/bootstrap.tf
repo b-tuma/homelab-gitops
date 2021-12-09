@@ -6,7 +6,7 @@ module "bootstrap" {
   api_servers                     = [var.k8s_domain_name]
   etcd_servers                    = [
       for num in range(var.controllers_count):
-      "nodec${num + 1}.${var.k8s_domain_name}"
+      "nodec${num + 1}.${var.domain_name}"
   ]
   networking                      = var.networking
   network_mtu                     = var.network_mtu
