@@ -12,6 +12,7 @@ resource "null_resource" "copy-controller-secrets" {
   count = var.controllers_count
   
   depends_on = [
+    resource.proxmox_vm_qemu.controllers,
     module.bootstrap,
   ]
 
@@ -43,6 +44,35 @@ resource "null_resource" "copy-controller-secrets" {
   }
 }
 
+# Secure copy kubeconfig to all workers. Activates kubelet.service
+resource "null_resource" "copy-worker-secrets" {
+  count = var.workers_count
+
+  depends_on = [
+    resource.proxmox_vm_qemu.workers,
+  ]
+
+  connection {
+    type    = "ssh"
+    host    = "nodew${count.index + 1}.${var.domain_name}"
+    user    = "core"
+    timeout = "15m"
+    agent = false
+    private_key = "${file("${var.ssh_priv}")}"
+  }
+
+  provisioner "file" {
+    content     = module.bootstrap.kubeconfig-kubelet
+    destination = "$HOME/kubeconfig"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv $HOME/kubeconfig /etc/kubernetes/kubeconfig",
+      "sudo touch /etc/kubernetes",
+    ]
+  }
+}
 
 # Connect to a controller to perform one-time cluster bootstrap.
 resource "null_resource" "bootstrap" {
