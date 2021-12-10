@@ -71,6 +71,11 @@ variable "worker_node_taints" {
   default     = {}
 }
 
+variable "kubeconfig_file" {
+  type    = string
+  default = "/home/user/.kube/config" 
+}
+
 # configuration
 
 variable "k8s_domain_name" {
