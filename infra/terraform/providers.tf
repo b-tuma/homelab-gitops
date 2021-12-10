@@ -2,7 +2,7 @@ terraform {
     required_version = ">= 0.13.0, < 2.0.0"
     required_providers {
         template = "~> 2.2"
-        null = "~> 3.1"
+        null = ">= 3.1"
         
         proxmox = {
             source  = "telmate/proxmox"

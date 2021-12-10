@@ -1,6 +1,6 @@
 # Kubernetes assets (kubeconfig, manifests)
 module "bootstrap" {
-  source = "git::https://github.com/poseidon/terraform-render-bootstrap.git?ref=5353769db663814d3d91346068f3222709e1c0cd"
+  source = "git::https://github.com/poseidon/terraform-render-bootstrap.git?ref=8add7022d17a7dd64198270f80d0653b9b7a28a2"
 
   cluster_name                    = var.cluster_name
   api_servers                     = [var.k8s_domain_name]
@@ -17,5 +17,4 @@ module "bootstrap" {
   enable_reporting                = var.enable_reporting
   enable_aggregation              = var.enable_aggregation
 
-  trusted_certs_dir = "/etc/pki/tls/certs"
 }
