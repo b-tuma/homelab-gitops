@@ -1,3 +1,5 @@
+# Terraform version and plugin versions
+
 terraform {
     required_version = ">= 0.13.0, < 2.0.0"
     required_providers {
@@ -17,10 +19,10 @@ terraform {
 }
 
 provider "proxmox" {
-  pm_api_url          = "https://${var.proxmox_host}:8006/api2/json"
-  pm_api_token_id     = var.proxmox_id
-  pm_api_token_secret = var.proxmox_secret
-  pm_tls_insecure     = true
+  pm_api_url      = "https://${var.proxmox_host}:8006/api2/json"
+  pm_user         = var.proxmox_user
+  pm_password     = var.proxmox_password
+  pm_tls_insecure = true
 }
 
 provider "ct" {}

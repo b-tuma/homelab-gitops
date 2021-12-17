@@ -10,7 +10,6 @@ resource "proxmox_vm_qemu" "controllers" {
 
     name = "kube-controller-${count.index + 1}"
     desc = "Fedora CoreOS - Kubernetes Controller ${count.index + 1}"
-    pool = "Kubernetes"
     target_node = var.proxmox_node
     clone = var.template_name
 
@@ -21,36 +20,32 @@ resource "proxmox_vm_qemu" "controllers" {
     # See more in proxmox-args-workaround.md
     args = "-fw_cfg name=opt/com.coreos/config,file=/tmp/controller_ignition_${count.index + 1}.ign"
     agent = 1
-    cores = 2
-    sockets = 1
+    cores = var.cpu_cores
     cpu = "host"
-    memory = 2048
+    memory = var.memory
     scsihw    = "virtio-scsi-pci"
     bootdisk  = "scsi0"
     
     disk {
         slot     = 0
-        size     = "10G"
+        size     = "${var.root_size}G"
         type     = "scsi"
-        storage  = "local-lvm"
+        storage  = var.storage_location
         iothread = 1
     }
 
-    network {
-        model  = "virtio"
-        bridge = "vmbr0"
+    dynamic "network" {
+        for_each = var.network
+        content {
+            model = network.value["model"]
+            bridge = network.value["bridge"]
+            tag = network.value["tag"]
+        }
     }
 
     timeouts {
         create = "5m"
         delete = "1m"
-    }
-
-    # Fix weirdness with pool name being detected as changed.
-    lifecycle {
-        ignore_changes = [
-        pool,
-        ]
     }
 }
 
@@ -90,8 +85,7 @@ data "template_file" "controller-configs" {
     etcd_initial_cluster = join(",", data.template_file.etcds.*.rendered)
     cluster_dns_service_ip = module.bootstrap.cluster_dns_service_ip
     cluster_domain_suffix = var.cluster_domain_suffix
-    ssh_authorized_key = var.ssh_key
-    desc = "Kubernetes Controller ${count.index + 1}"
+    ssh_authorized_key = var.ssh_authorized_key
   }
 }
 

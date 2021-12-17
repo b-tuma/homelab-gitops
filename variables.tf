@@ -1,36 +1,13 @@
-variable "proxmox_node"{
-  type    = string
-  default = "node"
-}
+#Proxmox Settings
 
 variable "proxmox_host" {
   type    = string
-  default = "host"
+  default = "host.example.org"
 }
 
-variable "ssh_key" {
+variable "proxmox_node"{
   type    = string
-  default = "ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA me@mypc" 
-}
-
-variable "ssh_priv" {
-  type = string
-  default = "/home/user/.ssh/id_ed25519"
-}
-
-variable "template_name" {
-  type    = string
-  default = "linux-template"
-}
-
-variable "proxmox_id" {
-  type    = string
-  default = "proxmox@proxmox"
-}
-
-variable "proxmox_secret" {
-  type    = string
-  default = "12345678-1234-1234-1234-0123456789ab"
+  default = "node"
 }
 
 variable "proxmox_user" {
@@ -43,14 +20,16 @@ variable "proxmox_password" {
   default = "password"
 }
 
-variable "controllers_count" {
-  type    = number
-  default = 1
+# VM Settings
+
+variable "ssh_authorized_key" {
+  type    = string
+  default = "ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA me@mypc" 
 }
 
-variable "workers_count" {
-  type    = number
-  default = 1
+variable "template_name" {
+  type    = string
+  default = "linux-template"
 }
 
 variable "cluster_domain_suffix" {
@@ -71,12 +50,60 @@ variable "worker_node_taints" {
   default     = {}
 }
 
-variable "kubeconfig_file" {
-  type    = string
-  default = "/home/user/.kube/config" 
+variable "network" {
+  type = list(object({
+    model = string
+    bridge = string
+    tag = number
+    }))
+  default = [{
+    model = "virtio"
+    bridge = "vmbr0"
+    tag = -1
+    }]
 }
 
-# configuration
+variable "root_size" {
+  type = number
+  default = 8
+}
+
+variable "storage_location" {
+  type = string
+  default = "local-lvm"
+}
+
+variable "cpu_cores" {
+  type    = number
+  default = 2
+}
+
+variable "memory" {
+  type    = number
+  default = 2048
+}
+
+# Kubernetes Settings
+
+variable "controllers_count" {
+  type    = number
+  default = 1
+}
+
+variable "controller_prefix" {
+  type    = string
+  default = "node-c"
+}
+
+variable "workers_count" {
+  type    = number
+  default = 1
+}
+
+variable "worker_prefix" {
+  type    = string
+  default = "node-w"
+}
 
 variable "k8s_domain_name" {
   description = "Controller DNS name which resolves to a controller instance. Workers and kubeconfig's will communicate with this endpoint (e.g. cluster.example.com)"
