@@ -72,6 +72,7 @@ data "ct_config" "worker-ignitions" {
 
     content = data.template_file.worker-configs.*.rendered[count.index]
     strict = true
+    snippets = var.worker_snippets
 }
 
 # Worker Butane config
@@ -80,11 +81,11 @@ data "template_file" "worker-configs" {
 
   template = file("${path.module}/fcc/worker.yaml")
   vars = {
-    domain_name = "nodew${count.index + 1}.${var.domain_name}"
+    domain_name = "${var.worker_prefix}${count.index + 1}.${var.domain_name}"
     cluster_dns_service_ip = module.bootstrap.cluster_dns_service_ip
     cluster_domain_suffix = var.cluster_domain_suffix
     ssh_authorized_key = var.ssh_authorized_key
-    node_labels = join(",", lookup(var.worker_node_labels, "nodew${count.index + 1}", []))
-    node_taints = join(",", lookup(var.worker_node_taints, "nodew${count.index + 1}", []))
+    node_labels = join(",", lookup(var.worker_node_labels, "${var.worker_prefix}${count.index + 1}", []))
+    node_taints = join(",", lookup(var.worker_node_taints, "${var.worker_prefix}${count.index + 1}", []))
   }
 }

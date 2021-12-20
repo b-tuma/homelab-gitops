@@ -65,7 +65,7 @@ variable "network" {
 
 variable "root_size" {
   type = number
-  default = 8
+  default = 10
 }
 
 variable "storage_location" {
@@ -105,9 +105,10 @@ variable "worker_prefix" {
   default = "node-w"
 }
 
-variable "k8s_domain_name" {
+variable "api_server" {
   description = "Controller DNS name which resolves to a controller instance. Workers and kubeconfig's will communicate with this endpoint (e.g. cluster.example.com)"
   type        = string
+  default = "unused.example.org"
 }
 
 variable "domain_name" {
@@ -150,6 +151,18 @@ variable "service_cidr" {
 variable "cluster_name" {
   description = "Unique cluster name"
   type        = string
+}
+
+variable "controller_snippets" {
+  type        = list(string)
+  description = "Controller Butane snippets"
+  default     = []
+}
+
+variable "worker_snippets" {
+  type        = list(string)
+  description = "Worker Butane snippets"
+  default     = []
 }
 
 # optional

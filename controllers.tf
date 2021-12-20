@@ -72,6 +72,7 @@ data "ct_config" "controller-ignitions" {
 
     content = data.template_file.controller-configs.*.rendered[count.index]
     strict = true
+    snippets = var.controller_snippets
 }
 
 # Controller Butane config
@@ -80,8 +81,8 @@ data "template_file" "controller-configs" {
 
   template = file("${path.module}/fcc/controller.yaml")
   vars = {
-    domain_name = "nodec${count.index + 1}.${var.domain_name}"
-    etcd_name = "nodec${count.index + 1}"
+    domain_name = "${var.controller_prefix}${count.index + 1}.${var.domain_name}"
+    etcd_name = "${var.controller_prefix}${count.index + 1}"
     etcd_initial_cluster = join(",", data.template_file.etcds.*.rendered)
     cluster_dns_service_ip = module.bootstrap.cluster_dns_service_ip
     cluster_domain_suffix = var.cluster_domain_suffix
@@ -94,7 +95,7 @@ data "template_file" "etcds" {
   template = "$${etcd}=https://$${domain}:2380"
 
   vars = {
-    etcd   = "nodec${count.index + 1}"
-    domain = "nodec${count.index + 1}.${var.domain_name}"
+    etcd   = "${var.controller_prefix}${count.index + 1}"
+    domain = "${var.controller_prefix}${count.index + 1}.${var.domain_name}"
   }
 }

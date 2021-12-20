@@ -13,31 +13,31 @@ resource "null_resource" "copy-controller-secrets" {
   
   depends_on = [
     resource.proxmox_vm_qemu.controllers,
+    resource.proxmox_vm_qemu.workers,
     module.bootstrap,
   ]
 
   connection {
     type    = "ssh"
-    host    = "nodec${count.index + 1}.${var.domain_name}"
+    host    = "${var.controller_prefix}${count.index + 1}.${var.domain_name}"
     user    = "core"
     timeout = "15m"
-    agent = false
-    private_key = "${file("${var.ssh_priv}")}"
+    agent = true
   }
 
   provisioner "file" {
     content     = module.bootstrap.kubeconfig-kubelet
-    destination = "$HOME/kubeconfig"
+    destination = "/var/home/core/kubeconfig"
   }
 
   provisioner "file" {
     content     = join("\n", local.assets_bundle)
-    destination = "$HOME/assets"
+    destination = "/var/home/core/assets"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mv $HOME/kubeconfig /etc/kubernetes/kubeconfig",
+      "sudo mv /var/home/core/kubeconfig /etc/kubernetes/kubeconfig",
       "sudo touch /etc/kubernetes",
       "sudo /opt/bootstrap/layout",
     ]
@@ -49,26 +49,26 @@ resource "null_resource" "copy-worker-secrets" {
   count = var.workers_count
 
   depends_on = [
+    resource.proxmox_vm_qemu.controllers,
     resource.proxmox_vm_qemu.workers,
   ]
 
   connection {
     type    = "ssh"
-    host    = "nodew${count.index + 1}.${var.domain_name}"
+    host    = "${var.worker_prefix}${count.index + 1}.${var.domain_name}"
     user    = "core"
     timeout = "15m"
-    agent = false
-    private_key = "${file("${var.ssh_priv}")}"
+    agent = true
   }
 
   provisioner "file" {
     content     = module.bootstrap.kubeconfig-kubelet
-    destination = "$HOME/kubeconfig"
+    destination = "/var/home/core/kubeconfig"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mv $HOME/kubeconfig /etc/kubernetes/kubeconfig",
+      "sudo mv /var/home/core/kubeconfig /etc/kubernetes/kubeconfig",
       "sudo touch /etc/kubernetes",
     ]
   }
@@ -80,16 +80,16 @@ resource "null_resource" "bootstrap" {
   # Terraform only does one task at a time, so it would try to bootstrap
   # while no Kubelets are running.
   depends_on = [
-    null_resource.copy-controller-secrets
+    null_resource.copy-controller-secrets,
+    null_resource.copy-worker-secrets,
   ]
 
   connection {
     type    = "ssh"
-    host    = "nodec1.${var.domain_name}"
+    host    = "${var.controller_prefix}1.${var.domain_name}"
     user    = "core"
     timeout = "15m"
-    agent = false
-    private_key = "${file("${var.ssh_priv}")}"
+    agent = true
   }
 
   provisioner "remote-exec" {
